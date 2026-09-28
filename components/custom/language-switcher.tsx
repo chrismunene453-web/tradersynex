@@ -11,9 +11,11 @@ import {
 import { useAppTranslations } from '@/components/custom/i18n-provider';
 import { useState } from 'react';
 
-export function LanguageSwitcher() {
+export function LanguageSwitcher({ className }: { className?: string }) {
   const { currentLang, switchLanguage } = useAppTranslations();
   const [open, setOpen] = useState(false);
+  const isFullWidth =
+    /\bw-full\b/.test(className ?? '') && /\bh-11\b/.test(className ?? '');
 
   const handleSelect = (lang: SupportedLanguage) => {
     switchLanguage(lang);
@@ -26,13 +28,21 @@ export function LanguageSwitcher() {
         <Button
           variant="outline"
           size="sm"
-          className="min-w-[4.5rem] justify-between gap-1.5 px-2.5"
+          className={cn(
+            isFullWidth
+              ? 'relative justify-start text-left gap-1.5 px-3'
+              : 'min-w-[4.5rem] justify-between gap-1.5 px-2.5',
+            className
+          )}
           aria-label={LANGUAGE_LABELS[currentLang]}
         >
-          <span className="text-xs font-semibold tracking-wide">{currentLang}</span>
+          <span className="text-xs font-semibold tracking-wide">
+            {currentLang}
+          </span>
           <svg
             className={cn(
               'h-3.5 w-3.5 text-muted-foreground transition-transform',
+              isFullWidth && 'absolute right-3',
               open && 'rotate-180'
             )}
             fill="none"
@@ -46,7 +56,13 @@ export function LanguageSwitcher() {
         </Button>
       </PopoverTrigger>
       {/* Above edit-mode FixedZones (z-[60]); shared PopoverContent is z-50. */}
-      <PopoverContent align="end" className="z-[100] w-44 p-1">
+      <PopoverContent
+        align="end"
+        className={cn(
+          'z-[100] p-1',
+          isFullWidth ? 'w-[var(--radix-popover-trigger-width)] min-w-0' : 'w-44'
+        )}
+      >
         <ul className="space-y-0.5">
           {SUPPORTED_LANGUAGES.map((lang) => (
             <li key={lang}>
